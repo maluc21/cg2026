@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Donor": {
+      "title": "Donor",
+      "description": "A neighbor who contributed cement bags.",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "block": { "type": "string" },
+        "house": { "type": "string" },
+        "bags": { "type": "number" },
+        "paymentType": { "type": "string", "enum": ["Banco", "Efectivo", "Material"] },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["firstName", "bags", "date"]
+    },
+    "Settings": {
+      "title": "Project Settings",
+      "description": "Global configuration for the cement collection project.",
+      "type": "object",
+      "properties": {
+        "bagsGoal": { "type": "number" },
+        "donorsGoal": { "type": "number" },
+        "linearMeters": { "type": "number" },
+        "costPerBag": { "type": "number" },
+        "adminPassword": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "donors": {
+      "schema": "Donor",
+      "description": "List of all contributions."
+    },
+    "settings/project": {
+      "schema": "Settings",
+      "description": "Project configuration singleton."
+    }
+  }
+}

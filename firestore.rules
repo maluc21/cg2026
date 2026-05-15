@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == "maluc21@gmail.com" && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Donors collection
+    match /donors/{donorId} {
+      function isValidDonor(data) {
+        return data.firstName is string && data.firstName.size() > 0 && data.firstName.size() <= 100 &&
+               (data.lastName == null || (data.lastName is string && data.lastName.size() <= 100)) &&
+               (data.block == null || (data.block is string && data.block.size() <= 20)) &&
+               (data.house == null || (data.house is string && data.house.size() <= 20)) &&
+               data.bags is number && data.bags > 0 && data.bags <= 1000 &&
+               data.date is string && data.date.size() == 10;
+      }
+
+      allow read: if true; // Public viewable
+      allow create: if isAdmin() && isValidDonor(request.resource.data);
+      allow update: if isAdmin() && isValidDonor(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Settings
+    match /settings/project {
+      allow read: if true; // Public viewable
+      allow write: if isAdmin();
+    }
+  }
+}
