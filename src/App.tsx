@@ -237,7 +237,7 @@ export default function App() {
             )}
           </div>
           <div className="flex-1">
-            <p className="text-[11px] font-black text-emerald-700 uppercase tracking-wider mb-0.5">
+            <p className="text-[9px] sm:text-[11px] font-black text-emerald-700 uppercase tracking-wide sm:tracking-wider mb-0.5">
               Residencial Caribbean Garden
             </p>
             <h1 className="text-base md:text-xl font-black tracking-tight text-emerald-950 leading-tight uppercase">
