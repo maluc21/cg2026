@@ -288,7 +288,7 @@ export default function App() {
             <p className="text-[9px] sm:text-[11px] font-black text-emerald-700 uppercase mb-0.5">
               Residencial Caribbean Garden
             </p>
-            <h1 className="text-base md:text-xl font-black text-emerald-950 leading-tight uppercase">
+            <h1 className="text-base md:text-xl font-black text-emerald-950 leading-tight">
               Recaudación Cemento para Proyecto Fundición Fase 2
             </h1>
             <p className="text-[11px] font-bold text-stone-500 uppercase mt-1 text-opacity-80">
@@ -317,18 +317,28 @@ export default function App() {
         {/* COMBINED HERO CARD: Meta + Visualización */}
         <div className="bg-white rounded-[2.5rem] border border-stone-200 p-6 md:p-8 shadow-sm overflow-hidden relative group">
           <div className="relative z-10">
-            <div className="flex justify-between items-center mb-8">
-              <div className="flex flex-col gap-1">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pb-8 border-b border-stone-100">
+              <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase inline-block">Meta del Proyecto</span>
-                  <p className="text-[24px] md:text-[32px] font-black text-stone-900 leading-none">
-                    {totalBags.toLocaleString()} <span className="text-stone-300 font-bold text-base md:text-xl">/ {settings.bagsGoal.toLocaleString()} Bolsas</span>
-                  </p>
+                  <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[9px] font-black uppercase border border-emerald-100/50 tracking-wider">Meta del Proyecto</span>
+                  <div className="h-px w-6 bg-stone-100" />
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-5xl md:text-6xl font-black text-stone-900 tracking-tighter">
+                    {totalBags.toLocaleString()}
+                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-stone-300 font-bold text-lg md:text-xl leading-none uppercase tracking-widest">/ {settings.bagsGoal.toLocaleString()}</span>
+                    <span className="text-[10px] font-black text-stone-400 uppercase mt-1">Bolsas Totales</span>
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                 <div className="text-4xl font-black text-emerald-700 leading-none">{pct}%</div>
-                 <div className="text-[10px] font-black text-stone-500 uppercase mt-1">Avance Total</div>
+
+              <div className="flex items-center gap-6 self-end md:self-center">
+                 <div className="text-right">
+                    <div className="text-5xl md:text-6xl font-black text-emerald-700 leading-none tracking-tighter">{pct}%</div>
+                    <div className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mt-2">Avance del Tramo</div>
+                 </div>
               </div>
             </div>
 
@@ -396,42 +406,45 @@ export default function App() {
 
         {/* STATS GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-           <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+           <div className="bg-white border border-stone-200 rounded-[2.5rem] p-7 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div>
-                <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Vecinos Participando</p>
-                <h4 className="text-3xl font-black text-stone-800">{donors.length}</h4>
+                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Vecinos Participando</p>
+                <div className="flex items-center gap-3">
+                   <h4 className="text-4xl font-black text-stone-900 tracking-tighter">{donors.length}</h4>
+                   <div className="flex -space-x-1.5">
+                      {[1,2,3].map(i => (
+                        <div key={i} className="w-5 h-5 rounded-full border border-white bg-stone-50 flex items-center justify-center overflow-hidden ring-1 ring-stone-100">
+                          {settings.logoUrl ? (
+                            <img src={settings.logoUrl} alt="logo" className="w-full h-full object-contain" />
+                          ) : (
+                            <Logo className="w-full h-full" />
+                          )}
+                        </div>
+                      ))}
+                   </div>
+                </div>
               </div>
-              <div className="mt-4 flex items-center gap-2">
-                 <div className="flex -space-x-2">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="w-6 h-6 rounded-full border-2 border-stone-100 bg-white flex items-center justify-center overflow-hidden">
-                        {settings.logoUrl ? (
-                          <img src={settings.logoUrl} alt="logo" className="w-full h-full object-contain" />
-                        ) : (
-                          <Logo className="w-full h-full" />
-                        )}
-                      </div>
-                    ))}
-                 </div>
-                 <span className="text-[10px] font-bold text-emerald-700">+{donors.length} Total</span>
+              <div className="mt-6 flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                 <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide">Base de Datos Activa</span>
               </div>
-              <Users className="absolute -right-4 -bottom-4 w-20 h-20 text-emerald-500/5" />
+              <Users className="absolute -right-4 -bottom-4 w-20 h-20 text-emerald-500/5 rotate-12" />
            </div>
 
-           <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between">
+           <div className="bg-white border border-stone-200 rounded-[2.5rem] p-7 shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Carga Sugerida</p>
-                <h4 className="text-3xl font-black text-stone-800">{bagsPerNeighbor}</h4>
+                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Carga Sugerida</p>
+                <h4 className="text-4xl font-black text-stone-800 tracking-tighter">{bagsPerNeighbor}</h4>
               </div>
-              <p className="text-[10px] font-bold text-emerald-700 uppercase mt-4">Bolsas / Lote</p>
+              <p className="text-[10px] font-bold text-stone-400 uppercase mt-6 tracking-wide">Bolsas / Lote Promedio</p>
            </div>
 
-           <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between">
+           <div className="bg-white border border-stone-200 rounded-[2.5rem] p-7 shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Bolsas Pendientes</p>
-                <h4 className="text-3xl font-black text-amber-600">{Math.max(0, settings.bagsGoal - totalBags).toLocaleString()}</h4>
+                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Bolsas Pendientes</p>
+                <h4 className="text-4xl font-black text-amber-600 tracking-tighter">{Math.max(0, settings.bagsGoal - totalBags).toLocaleString()}</h4>
               </div>
-              <p className="text-[10px] font-bold text-amber-700 uppercase mt-4">Para la Meta</p>
+              <p className="text-[10px] font-bold text-amber-700/60 uppercase mt-6 tracking-wide">Diferencia para Meta</p>
            </div>
         </div>
 
@@ -441,29 +454,34 @@ export default function App() {
               <h3 className="text-[12px] font-black text-stone-800 uppercase">Actividad de Aportes</h3>
            </div>
 
-           <div className="space-y-3">
+           <div className="space-y-2">
               {donors.length === 0 ? (
                 <div className="text-center py-12">
                    <p className="text-[11px] font-bold text-stone-500 uppercase">Esperando primer aporte...</p>
                 </div>
               ) : (
                 donors.map((donor, idx) => (
-                  <div key={donor.id} className="group bg-[#fcfcfc] hover:bg-[#f2f4f1] border border-stone-100 p-4 rounded-[1.5rem] transition-all flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <span className="text-[11px] font-bold text-stone-200">{idx + 1}</span>
+                  <div key={donor.id} className="group bg-white hover:bg-emerald-50/30 border border-stone-100 p-5 rounded-[1.8rem] transition-all flex items-center justify-between shadow-sm hover:shadow-md hover:border-emerald-100 relative overflow-hidden">
+                    <div className="flex items-center gap-5 relative z-10">
+                      <div className="w-10 h-10 rounded-2xl bg-stone-50 flex items-center justify-center text-[11px] font-black text-stone-300 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                        {donors.length - idx}
+                      </div>
                       <div>
-                        <p className="text-[15px] font-black text-stone-800 uppercase leading-none">{donor.firstName} {donor.lastName}</p>
-                        <div className="flex gap-3 mt-1.5 flex-wrap">
-                          <span className="text-[10px] font-bold text-stone-600 uppercase">Bloque {donor.block || '?'} Lote {donor.house || '?'}</span>
-                          <span className="px-2 py-0.5 bg-stone-100 rounded text-[9px] font-black text-stone-700 uppercase">{donor.paymentType || 'Banco'}</span>
-                          <span className="text-[10px] font-bold text-stone-500 uppercase tabular-nums">{formatDate(donor.date)}</span>
+                        <p className="text-[16px] font-black text-stone-900 uppercase leading-none tracking-tight">{donor.firstName} {donor.lastName}</p>
+                        <div className="flex gap-4 mt-2 flex-wrap items-center">
+                          <div className="flex items-center gap-1.5">
+                            <Building2 className="w-3 h-3 text-stone-300" />
+                            <span className="text-[10px] font-bold text-stone-500 uppercase">B{donor.block || '?'} L{donor.house || '?'}</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-stone-100 rounded-md text-[8px] font-black text-stone-500 uppercase tracking-wider">{donor.paymentType || 'Banco'}</span>
+                          <span className="text-[9px] font-bold text-stone-300 uppercase tabular-nums">{formatDate(donor.date)}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-6 relative z-10">
                       <div className="text-right">
-                        <p className="text-emerald-700 font-extrabold text-xl leading-none">+{donor.bags}</p>
-                        <p className="text-[9px] font-black text-emerald-400 uppercase mt-0.5">Bolsas</p>
+                        <p className="text-emerald-700 font-black text-2xl leading-none tracking-tighter">+{donor.bags}</p>
+                        <p className="text-[8px] font-black text-emerald-400 uppercase mt-1 tracking-[0.15em]">Bolsas</p>
                       </div>
                       {isAdmin && (
                         <div className="flex gap-1">
