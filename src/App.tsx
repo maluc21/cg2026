@@ -289,7 +289,7 @@ export default function App() {
               Residencial Caribbean Garden
             </p>
             <h1 className="text-base md:text-xl font-black text-emerald-950 leading-tight">
-              Recaudación Cemento para Proyecto Fundición Fase 2
+              Recaudación Cemento Proyecto Fundición Fase 2
             </h1>
             <p className="text-[11px] font-bold text-stone-500 uppercase mt-1 text-opacity-80">
               Calle Principal - 2026
