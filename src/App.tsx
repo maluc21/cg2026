@@ -414,7 +414,7 @@ export default function App() {
 
         {/* STATS GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-           <div className="bg-white border border-stone-200 rounded-[2.5rem] p-7 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+           <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div>
                 <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Vecinos Participando</p>
                 <div className="flex items-center gap-3">
@@ -439,7 +439,7 @@ export default function App() {
               <Users className="absolute -right-4 -bottom-4 w-20 h-20 text-emerald-500/5 rotate-12" />
            </div>
 
-           <div className="bg-white border border-stone-200 rounded-[2.5rem] p-7 shadow-sm flex flex-col justify-between">
+           <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
               <div>
                 <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Carga Sugerida</p>
                 <h4 className="text-4xl font-black text-stone-800 tracking-tighter">{bagsPerNeighbor}</h4>
@@ -447,7 +447,7 @@ export default function App() {
               <p className="text-[10px] font-bold text-stone-400 uppercase mt-6 tracking-wide">Bolsas / Lote Promedio</p>
            </div>
 
-           <div className="bg-white border border-stone-200 rounded-[2.5rem] p-7 shadow-sm flex flex-col justify-between">
+           <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
               <div>
                 <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Bolsas Pendientes</p>
                 <h4 className="text-4xl font-black text-amber-600 tracking-tighter">{Math.max(0, settings.bagsGoal - totalBags).toLocaleString()}</h4>
@@ -457,7 +457,7 @@ export default function App() {
         </div>
 
         {/* REGISTROS CARD */}
-        <div className="bg-white rounded-[2.5rem] border border-stone-200 p-6 shadow-sm flex-1">
+        <div className="bg-white rounded-3xl border border-stone-200 p-6 shadow-sm flex-1">
            <div className="flex items-center justify-between mb-6">
               <h3 className="text-[12px] font-black text-stone-800 uppercase">Actividad de Aportes</h3>
            </div>
@@ -471,18 +471,18 @@ export default function App() {
                 donors.map((donor, idx) => (
                   <div key={donor.id} className="group bg-white hover:bg-emerald-50/30 border border-stone-100 p-5 rounded-[1.8rem] transition-all flex items-center justify-between shadow-sm hover:shadow-md hover:border-emerald-100 relative overflow-hidden">
                     <div className="flex items-center gap-5 relative z-10">
-                      <div className="w-10 h-10 rounded-2xl bg-stone-50 flex items-center justify-center text-[11px] font-black text-stone-300 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                      <div className="w-10 h-10 rounded-2xl bg-stone-50 flex items-center justify-center text-[11px] font-black text-stone-500 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
                         {donors.length - idx}
                       </div>
                       <div>
                         <p className="text-[16px] font-black text-stone-900 uppercase leading-none tracking-tight">{donor.firstName} {donor.lastName}</p>
                         <div className="flex gap-4 mt-2 flex-wrap items-center">
                           <div className="flex items-center gap-1.5">
-                            <Building2 className="w-3 h-3 text-stone-300" />
+                            <Building2 className="w-3 h-3 text-stone-500" />
                             <span className="text-[10px] font-bold text-stone-500 uppercase">B{donor.block || '?'} L{donor.house || '?'}</span>
                           </div>
                           <span className="px-2 py-0.5 bg-stone-100 rounded-md text-[8px] font-black text-stone-500 uppercase tracking-wider">{donor.paymentType || 'Banco'}</span>
-                          <span className="text-[9px] font-bold text-stone-300 uppercase tabular-nums">{formatDate(donor.date)}</span>
+                          <span className="text-[9px] font-bold text-stone-500 uppercase tabular-nums">{formatDate(donor.date)}</span>
                         </div>
                       </div>
                     </div>
