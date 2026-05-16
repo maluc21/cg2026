@@ -25,7 +25,6 @@ import {
   Users, 
   Lock, 
   Plus, 
-  Settings, 
   Download, 
   Check, 
   X, 
@@ -34,7 +33,8 @@ import {
   LogOut,
   FileSpreadsheet,
   FileText,
-  Save
+  Save,
+  Pencil
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -475,13 +475,13 @@ export default function App() {
                         <p className="text-[9px] font-black text-emerald-400 uppercase mt-0.5">Bolsas</p>
                       </div>
                       {isAdminMode && (
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-1">
                           <button 
                             onClick={() => editDonor(donor)}
-                            className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-white rounded-xl transition-all"
+                            className="p-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all"
                             title="Editar"
                           >
-                            <Settings className="w-4 h-4" />
+                            <Pencil className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => deleteDonor(donor.id)}

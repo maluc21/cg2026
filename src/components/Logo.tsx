@@ -50,7 +50,6 @@ const Logo: React.FC<{ className?: string }> = ({ className }) => {
         fontFamily="var(--font-sans), sans-serif" 
         fontSize="32" 
         fontWeight="bold"
-        letterSpacing="2"
         fill="#064e3b"
       >
         Residencial
@@ -64,7 +63,6 @@ const Logo: React.FC<{ className?: string }> = ({ className }) => {
         fontSize="80" 
         fontWeight="900"
         fill="#0369a1"
-        style={{ letterSpacing: '-2px' }}
       >
         Caribbean
       </text>
@@ -77,7 +75,6 @@ const Logo: React.FC<{ className?: string }> = ({ className }) => {
         fontSize="100" 
         fontWeight="900"
         fill="#15803d"
-        style={{ letterSpacing: '-4px' }}
       >
         Garden
       </text>
