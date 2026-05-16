@@ -314,92 +314,100 @@ export default function App() {
           </button>
         </header>
 
-        {/* COMBINED HERO CARD: Meta + Visualización */}
-        <div className="bg-white rounded-[2.5rem] border border-stone-200 p-6 md:p-8 shadow-sm overflow-hidden relative group">
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pb-8 border-b border-stone-100">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[9px] font-black uppercase border border-emerald-100/50 tracking-wider">Meta del Proyecto</span>
-                  <div className="h-px w-6 bg-stone-100" />
-                </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-5xl md:text-6xl font-black text-stone-900 tracking-tighter">
+        {/* COMBINED HERO CARD: Meta + Visualización Vertical */}
+        <div className="bg-white rounded-[2.5rem] border border-stone-200 p-8 md:p-12 shadow-sm overflow-hidden relative group">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
+            
+            {/* LEFT COLUMN: PRIMARY METRICS */}
+            <div className="md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-10 md:space-y-16">
+              <div className="space-y-6">
+                <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase border border-emerald-100/50 tracking-widest inline-block">Meta del Proyecto</span>
+                
+                <div className="flex flex-col gap-2">
+                  <span className="text-7xl sm:text-8xl md:text-[10rem] font-black text-stone-900 tracking-tighter leading-none">
                     {totalBags.toLocaleString()}
                   </span>
-                  <div className="flex flex-col">
-                    <span className="text-stone-300 font-bold text-lg md:text-xl leading-none uppercase tracking-widest">/ {settings.bagsGoal.toLocaleString()}</span>
-                    <span className="text-[10px] font-black text-stone-400 uppercase mt-1">Bolsas Totales</span>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-stone-300 font-bold text-2xl md:text-4xl leading-none uppercase tracking-widest">/ {settings.bagsGoal.toLocaleString()}</span>
+                    <span className="text-[12px] font-black text-stone-400 uppercase tracking-[0.2em]">Bolsas Totales</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 self-end md:self-center">
-                 <div className="text-right">
-                    <div className="text-5xl md:text-6xl font-black text-emerald-700 leading-none tracking-tighter">{pct}%</div>
-                    <div className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mt-2">Avance del Tramo</div>
-                 </div>
+              <div className="pt-10 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div>
+                   <div className="text-7xl sm:text-8xl md:text-9xl font-black text-emerald-700 leading-none tracking-tighter">{pct}%</div>
+                   <div className="text-[11px] font-black text-stone-400 uppercase tracking-[0.3em] mt-3">Avance del Proyecto</div>
+                </div>
+                <div className="hidden sm:block">
+                   <div className="w-16 h-16 rounded-full border-4 border-emerald-50 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500 animate-pulse" />
+                   </div>
+                </div>
               </div>
             </div>
 
-            {/* Integrated Visualization (The Street) */}
-            <div className="relative w-full aspect-[22/5] bg-[#ecf3e8] rounded-3xl border-2 border-emerald-100 overflow-hidden shadow-inner mb-6">
-              <svg viewBox="0 0 920 120" className="w-full h-full">
-                {/* Grass Background */}
-                <rect x="0" y="0" width="920" height="120" fill="#ecf3e8" />
-                
-                {/* Dirt Road Base */}
-                <rect x="0" y="30" width="920" height="60" fill="#e2d1c3" />
-                
-                {/* Bocacalles (Side Streets - Top) */}
-                {[0.15, 0.35, 0.55, 0.8].map((pos, i) => (
-                  <rect key={`side-${i}`} x={pos * 920 - 15} y={0} width={30} height={35} fill="#e2d1c3" />
-                ))}
+            {/* RIGHT COLUMN: VERTICAL STREET PROGRESS */}
+            <div className="md:col-span-5 lg:col-span-4 h-[450px] md:h-[600px]">
+              <div className="relative w-full h-full bg-[#ecf3e8] rounded-[3rem] border-2 border-emerald-100 overflow-hidden shadow-inner group-hover:border-emerald-200 transition-all duration-500">
+                <svg viewBox="0 0 120 920" className="w-full h-full" preserveAspectRatio="xMidYMin slice">
+                  {/* Grass Background */}
+                  <rect x="0" y="0" width="120" height="920" fill="#ecf3e8" />
+                  
+                  {/* Dirt Road Base - Vertical */}
+                  <rect x="30" y="0" width="60" height="920" fill="#e2d1c3" />
+                  
+                  {/* Road Borders */}
+                  <line x1="30" y1="0" x2="30" y2="920" stroke="#d6c8bc" strokeWidth="2" />
+                  <line x1="90" y1="0" x2="90" y2="920" stroke="#d6c8bc" strokeWidth="2" />
 
-                {/* Palm Trees (Bottom) */}
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <g key={`palm-${i}`} transform={`translate(${i * 105 + 20}, 108) scale(0.15)`}>
-                    <path d="M0 0 Q5 -40 10 -80" stroke="#714e32" strokeWidth="12" fill="none" strokeLinecap="round" />
-                    <g transform="translate(10, -80)">
-                      <path d="M0 0 Q-30 -20 -50 40" stroke="#15803d" strokeWidth="6" fill="none" />
-                      <path d="M0 0 Q30 -20 50 40" stroke="#15803d" strokeWidth="6" fill="none" />
-                      <path d="M0 0 Q10 -40 40 -20" stroke="#15803d" strokeWidth="6" fill="none" />
-                      <path d="M0 0 Q-10 -40 -40 -20" stroke="#15803d" strokeWidth="6" fill="none" />
+                  {/* Sidewalks / Features (Static décor) */}
+                  {[0.1, 0.3, 0.5, 0.7, 0.9].map((pos, i) => (
+                    <g key={`deco-${i}`}>
+                       <rect x="0" y={pos * 920 - 15} width="30" height="30" fill="#e5e7eb" opacity="0.3" />
+                       <rect x="90" y={pos * 920 + 10} width="30" height="30" fill="#e5e7eb" opacity="0.3" />
+                       <circle cx={15} cy={pos * 920 + 30} r="2" fill="#15803d" opacity="0.2" />
                     </g>
-                  </g>
-                ))}
+                  ))}
 
-                {/* Grass texture dots */}
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <circle key={`dot-${i}`} cx={i * 80 + 10} cy={15} r={1.5} fill="#d1e2c4" />
-                ))}
-
-                <g>
-                   {Array.from({ length: 20 }).map((_, i) => {
-                     const slabWidthPct = 5;
-                     const opacity = (i * slabWidthPct) < pct ? 1 : 0;
-                     if (opacity === 0) return null;
-                     return (
+                  {/* Concrete Progress - Vertical bottom to top */}
+                  <g>
+                    {Array.from({ length: 20 }).map((_, i) => {
+                      const slabWidthPct = 5;
+                      const opacity = (i * slabWidthPct) < pct ? 1 : 0;
+                      if (opacity === 0) return null;
+                      
+                      // Calculate Y from bottom
+                      const yPos = 920 - ((i + 1) * 46);
+                      
+                      return (
                         <rect 
-                          key={i} x={i * 46} y={30} width={46} height={60} 
+                          key={i} x="30" y={yPos} width="60" height="46" 
                           fill="#64748b" stroke="#334155" strokeWidth="1"
+                          className="transition-all duration-700"
                         />
-                     );
-                   })}
-                </g>
-                
-                {/* Decorative flowers/grass tufts */}
-                <circle cx="150" cy="110" r="2" fill="#facc15" />
-                <circle cx="450" cy="15" r="2" fill="#f87171" />
-                <circle cx="800" cy="105" r="2" fill="#60a5fa" />
-                
-                <line x1="0" y1="60" x2="920" y2="60" stroke="white" strokeWidth="1" strokeDasharray="10,10" opacity="0.4" />
-                <line x1={0.7 * 920} y1="20" x2={0.7 * 920} y2="100" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,2" />
-              </svg>
-              <div className="absolute top-2 left-5 text-[9px] font-black text-emerald-900/60 uppercase">Inicio Calle</div>
-              <div className="absolute top-2 right-5 text-[9px] font-black text-emerald-900/60 uppercase">Meta {settings.linearMeters}m</div>
-            </div>
+                      );
+                    })}
+                  </g>
 
+                  {/* Dash lines */}
+                  <line x1="60" y1="0" x2="60" y2="920" stroke="white" strokeWidth="1" strokeDasharray="10,10" opacity="0.4" />
+                  
+                  {/* Phase Marker (70%) */}
+                  <line x1="20" y1={920 * (1 - 0.7)} x2="100" y2={920 * (1 - 0.7)} stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,2" />
+                </svg>
+                
+                {/* Labels overlay */}
+                <div className="absolute inset-0 p-6 flex flex-col justify-between pointer-events-none">
+                  <div className="text-center">
+                    <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-900 lowercase border border-white shadow-sm tracking-widest">Meta {settings.linearMeters}m</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-black text-emerald-900/60 lowercase border border-white shadow-sm tracking-widest">Inicio Calle</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
         </div>
