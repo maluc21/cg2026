@@ -317,21 +317,23 @@ export default function App() {
         {/* COMBINED HERO CARD: Meta + Visualización */}
         <div className="bg-white rounded-[2.5rem] border border-stone-200 p-6 md:p-8 shadow-sm overflow-hidden relative group">
           <div className="relative z-10">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase mb-3 inline-block">Meta del Proyecto</span>
-                <h2 className="text-3xl md:text-4xl font-black text-stone-800 leading-none">
-                  {totalBags.toLocaleString()} <span className="text-xl text-stone-500 font-normal uppercase">/ {settings.bagsGoal.toLocaleString()} Bolsas</span>
-                </h2>
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase inline-block">Meta del Proyecto</span>
+                  <p className="text-[24px] md:text-[32px] font-black text-stone-900 leading-none">
+                    {totalBags.toLocaleString()} <span className="text-stone-300 font-bold text-base md:text-xl">/ {settings.bagsGoal.toLocaleString()} Bolsas</span>
+                  </p>
+                </div>
               </div>
               <div className="text-right">
-                 <div className="text-3xl font-black text-emerald-600 leading-none">{pct}%</div>
-                 <div className="text-[10px] font-black text-stone-500 uppercase mt-1">Avance</div>
+                 <div className="text-4xl font-black text-emerald-700 leading-none">{pct}%</div>
+                 <div className="text-[10px] font-black text-stone-500 uppercase mt-1">Avance Total</div>
               </div>
             </div>
 
             {/* Integrated Visualization (The Street) */}
-            <div className="relative w-full aspect-[22/5] bg-[#ecf3e8] rounded-3xl border-2 border-emerald-100 overflow-hidden shadow-inner mb-8">
+            <div className="relative w-full aspect-[22/5] bg-[#ecf3e8] rounded-3xl border-2 border-emerald-100 overflow-hidden shadow-inner mb-6">
               <svg viewBox="0 0 920 120" className="w-full h-full">
                 {/* Grass Background */}
                 <rect x="0" y="0" width="920" height="120" fill="#ecf3e8" />
@@ -370,7 +372,7 @@ export default function App() {
                      return (
                         <rect 
                           key={i} x={i * 46} y={30} width={46} height={60} 
-                          fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1"
+                          fill="#64748b" stroke="#334155" strokeWidth="1"
                         />
                      );
                    })}
@@ -388,56 +390,21 @@ export default function App() {
               <div className="absolute top-2 right-5 text-[9px] font-black text-emerald-900/60 uppercase">Meta {settings.linearMeters}m</div>
             </div>
 
-            {/* Accumulation Visual: The Cement Bag Stack */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-3">
-                 <h4 className="text-[11px] font-black text-stone-600 uppercase">Material Acumulado</h4>
-                 <div className="text-[10px] font-bold text-emerald-700 uppercase tabular-nums">{totalBags} Bolsas</div>
-              </div>
-              <div className="flex flex-wrap gap-1 md:gap-1.5 p-4 bg-stone-50 rounded-[2rem] border border-stone-100 min-h-[80px] content-start">
-                 {Array.from({ length: Math.ceil(settings.bagsGoal / 50) }).map((_, i) => {
-                    const threshold = (i + 1) * 50;
-                    const isFilled = totalBags >= threshold;
-                    return (
-                      <div 
-                        key={i} 
-                        className={cn(
-                          "w-4 h-5 md:w-5 md:h-6 rounded-[4px] border transition-all duration-500",
-                          isFilled 
-                            ? "bg-stone-400 border-stone-500 shadow-sm scale-100" 
-                            : "bg-white border-stone-200 opacity-20 scale-90"
-                        )}
-                        title={`Bloque de 50 bolsas #${i+1}`}
-                      >
-                        {isFilled && <div className="w-full h-[2px] bg-stone-500 mt-1 opacity-50" />}
-                      </div>
-                    );
-                 })}
-              </div>
-              <p className="mt-2 text-[10px] text-stone-500 font-medium lowercase italic text-center">Cada bloque representa aprox. 50 bolsas</p>
-            </div>
-            
-            <p className="mt-4 text-center text-[11px] font-black text-stone-500 uppercase">
-              {pct >= 70 ? (
-                <span className="text-amber-800 bg-amber-50 px-4 py-2 rounded-full border border-amber-200 italic">✔ Programando fundición (70% superado)</span>
-              ) : (
-                <span>Faltan {need70.toLocaleString()} bolsas para iniciar obra</span>
-              )}
-            </p>
+
           </div>
         </div>
 
-        {/* VECINOS STATS CARD */}
-        <div className="grid grid-cols-2 gap-4">
-           <div className="bg-emerald-500 text-white rounded-[2rem] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+        {/* STATS GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+           <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div>
-                <p className="text-emerald-100 text-[10px] font-black uppercase mb-1">Vecinos Participando</p>
-                <h4 className="text-4xl font-black">{donors.length}</h4>
+                <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Vecinos Participando</p>
+                <h4 className="text-3xl font-black text-stone-800">{donors.length}</h4>
               </div>
               <div className="mt-4 flex items-center gap-2">
                  <div className="flex -space-x-2">
                     {[1,2,3].map(i => (
-                      <div key={i} className="w-8 h-8 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center overflow-hidden">
+                      <div key={i} className="w-6 h-6 rounded-full border-2 border-stone-100 bg-white flex items-center justify-center overflow-hidden">
                         {settings.logoUrl ? (
                           <img src={settings.logoUrl} alt="logo" className="w-full h-full object-contain" />
                         ) : (
@@ -446,17 +413,25 @@ export default function App() {
                       </div>
                     ))}
                  </div>
-                 <span className="text-[11px] font-bold text-emerald-100">+{donors.length} Contribuyentes</span>
+                 <span className="text-[10px] font-bold text-emerald-700">+{donors.length} Total</span>
               </div>
-              <Users className="absolute -right-4 -bottom-4 w-24 h-24 text-white/10" />
+              <Users className="absolute -right-4 -bottom-4 w-20 h-20 text-emerald-500/5" />
            </div>
 
            <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between">
               <div>
                 <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Carga Sugerida</p>
-                <h4 className="text-4xl font-black text-stone-800">{bagsPerNeighbor}</h4>
+                <h4 className="text-3xl font-black text-stone-800">{bagsPerNeighbor}</h4>
               </div>
-              <p className="text-[10px] font-bold text-emerald-700 uppercase mt-4">Bolsas promedio por lote</p>
+              <p className="text-[10px] font-bold text-emerald-700 uppercase mt-4">Bolsas / Lote</p>
+           </div>
+
+           <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Bolsas Pendientes</p>
+                <h4 className="text-3xl font-black text-amber-600">{Math.max(0, settings.bagsGoal - totalBags).toLocaleString()}</h4>
+              </div>
+              <p className="text-[10px] font-bold text-amber-700 uppercase mt-4">Para la Meta</p>
            </div>
         </div>
 
