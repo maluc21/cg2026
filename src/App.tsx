@@ -34,7 +34,8 @@ import {
   FileSpreadsheet,
   FileText,
   Save,
-  Pencil
+  Pencil,
+  Settings
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -300,9 +301,16 @@ export default function App() {
               else if (!isAdmin) setMsg({ type: 'err', text: 'Solo el administrador puede acceder.' });
               else setIsAdminMode(!isAdminMode);
             }}
-            className="p-3 bg-stone-50 text-stone-400 rounded-2xl hover:bg-emerald-50 hover:text-emerald-700 transition-all border border-stone-100"
+            className={cn(
+              "p-3 rounded-2xl transition-all border",
+              isAdminMode 
+                ? "bg-emerald-700 text-white border-emerald-800 shadow-lg shadow-emerald-200" 
+                : isAdmin
+                  ? "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200"
+                  : "bg-stone-50 text-stone-400 border-stone-100 hover:bg-stone-100"
+            )}
           >
-            {isAdminMode ? <X className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+            {isAdminMode ? <X className="w-5 h-5" /> : isAdmin ? <Settings className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
           </button>
         </header>
 
@@ -482,7 +490,7 @@ export default function App() {
                         <p className="text-emerald-700 font-extrabold text-xl leading-none">+{donor.bags}</p>
                         <p className="text-[9px] font-black text-emerald-400 uppercase mt-0.5">Bolsas</p>
                       </div>
-                      {isAdminMode && (
+                      {isAdmin && (
                         <div className="flex gap-1">
                           <button 
                             onClick={() => editDonor(donor)}
@@ -493,7 +501,7 @@ export default function App() {
                           </button>
                           <button 
                             onClick={() => deleteDonor(donor.id)}
-                            className="p-2 text-stone-400 hover:text-red-500 hover:bg-white rounded-xl transition-all"
+                            className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all"
                             title="Eliminar"
                           >
                             <Trash2 className="w-4 h-4" />
