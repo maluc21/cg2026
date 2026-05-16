@@ -97,9 +97,17 @@ export default function App() {
   const handleLogin = async () => {
     try {
       await signInWithPopup(auth, provider);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setMsg({ type: 'err', text: 'Error al iniciar sesión.' });
+      if (err.code === 'auth/popup-closed-by-user') {
+        setMsg({ type: 'err', text: 'La ventana fue cerrada antes de completar.' });
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setMsg({ type: 'err', text: 'Este dominio no está autorizado en Firebase Console.' });
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setMsg({ type: 'err', text: 'Google Auth no está habilitado en Firebase Console.' });
+      } else {
+        setMsg({ type: 'err', text: `Error: ${err.code || 'al iniciar sesión'}` });
+      }
     }
   };
 
