@@ -276,8 +276,8 @@ export default function App() {
       <div className="max-w-[700px] mx-auto flex flex-col gap-4">
         
         {/* Mobile-First Header */}
-        <header className="bg-white rounded-[2rem] p-5 shadow-sm border border-stone-100 flex items-center gap-4">
-          <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center border border-stone-50 overflow-hidden shadow-sm p-1">
+        <header className="bg-white rounded-[2rem] p-4 shadow-sm border border-stone-100 flex items-center gap-4">
+          <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center border border-stone-50 overflow-hidden shadow-sm p-1">
             {settings.logoUrl ? (
               <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-contain" />
             ) : (
@@ -315,29 +315,29 @@ export default function App() {
         </header>
 
         {/* COMBINED HERO CARD: Meta + Visualización Vertical */}
-        <div className="bg-white rounded-[2.5rem] border border-stone-200 p-8 md:p-12 shadow-sm overflow-hidden relative group">
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
+        <div className="bg-white rounded-[2.5rem] border border-stone-200 p-6 md:p-10 shadow-sm overflow-hidden relative group">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
             
             {/* LEFT COLUMN: PRIMARY METRICS */}
-            <div className="md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-10 md:space-y-16">
+            <div className="md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-6 md:space-y-8">
               <div className="space-y-6">
                 <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-black uppercase border border-emerald-100/50 tracking-widest inline-block">Meta del Proyecto</span>
                 
-                <div className="flex flex-col gap-2">
-                  <span className="text-7xl sm:text-8xl md:text-[10rem] font-black text-stone-900 tracking-tighter leading-none">
+                <div className="flex flex-col">
+                  <span className="text-7xl sm:text-8xl md:text-9xl font-black text-stone-900 tracking-tighter leading-none">
                     {totalBags.toLocaleString()}
                   </span>
-                  <div className="flex items-center gap-4 mt-2">
-                    <span className="text-stone-300 font-bold text-2xl md:text-4xl leading-none uppercase tracking-widest">/ {settings.bagsGoal.toLocaleString()}</span>
+                  <div className="flex items-center gap-4 mt-1">
+                    <span className="text-stone-300 font-bold text-2xl md:text-3xl leading-none uppercase tracking-widest">/ {settings.bagsGoal.toLocaleString()}</span>
                     <span className="text-[12px] font-black text-stone-400 uppercase tracking-[0.2em]">Bolsas Totales</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-10 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div className="pt-6 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                    <div className="text-7xl sm:text-8xl md:text-9xl font-black text-emerald-700 leading-none tracking-tighter">{pct}%</div>
-                   <div className="text-[11px] font-black text-stone-400 uppercase tracking-[0.3em] mt-3">Avance del Proyecto</div>
+                   <div className="text-[11px] font-black text-stone-400 uppercase tracking-[0.3em] mt-2">Avance del Proyecto</div>
                 </div>
                 <div className="hidden sm:block">
                    <div className="w-16 h-16 rounded-full border-4 border-emerald-50 flex items-center justify-center">
@@ -416,9 +416,9 @@ export default function App() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
            <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div>
-                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Vecinos Participando</p>
+                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-1">Vecinos Participando</p>
                 <div className="flex items-center gap-3">
-                   <h4 className="text-4xl font-black text-stone-900 tracking-tighter">{donors.length}</h4>
+                   <h4 className="text-4xl font-black text-stone-900 tracking-tighter leading-none">{donors.length}</h4>
                    <div className="flex -space-x-1.5">
                       {[1,2,3].map(i => (
                         <div key={i} className="w-5 h-5 rounded-full border border-white bg-stone-50 flex items-center justify-center overflow-hidden ring-1 ring-stone-100">
@@ -432,7 +432,7 @@ export default function App() {
                    </div>
                 </div>
               </div>
-              <div className="mt-6 flex items-center gap-2">
+              <div className="mt-3 flex items-center gap-2">
                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                  <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide">Base de Datos Activa</span>
               </div>
@@ -441,18 +441,18 @@ export default function App() {
 
            <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Carga Sugerida</p>
-                <h4 className="text-4xl font-black text-stone-800 tracking-tighter">{bagsPerNeighbor}</h4>
+                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-1">Carga Sugerida</p>
+                <h4 className="text-4xl font-black text-stone-800 tracking-tighter leading-none">{bagsPerNeighbor}</h4>
               </div>
-              <p className="text-[10px] font-bold text-stone-400 uppercase mt-6 tracking-wide">Bolsas / Lote Promedio</p>
+              <p className="text-[10px] font-bold text-stone-400 uppercase mt-3 tracking-wide">Bolsas / Lote Promedio</p>
            </div>
 
            <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-4">Bolsas Pendientes</p>
-                <h4 className="text-4xl font-black text-amber-600 tracking-tighter">{Math.max(0, settings.bagsGoal - totalBags).toLocaleString()}</h4>
+                <p className="text-stone-400 text-[9px] font-black uppercase tracking-widest mb-1">Bolsas Pendientes</p>
+                <h4 className="text-4xl font-black text-amber-600 tracking-tighter leading-none">{Math.max(0, settings.bagsGoal - totalBags).toLocaleString()}</h4>
               </div>
-              <p className="text-[10px] font-bold text-amber-700/60 uppercase mt-6 tracking-wide">Diferencia para Meta</p>
+              <p className="text-[10px] font-bold text-amber-700/60 uppercase mt-3 tracking-wide">Diferencia para Meta</p>
            </div>
         </div>
 
@@ -469,14 +469,14 @@ export default function App() {
                 </div>
               ) : (
                 donors.map((donor, idx) => (
-                  <div key={donor.id} className="group bg-white hover:bg-emerald-50/30 border border-stone-100 p-5 rounded-[1.8rem] transition-all flex items-center justify-between shadow-sm hover:shadow-md hover:border-emerald-100 relative overflow-hidden">
-                    <div className="flex items-center gap-5 relative z-10">
-                      <div className="w-10 h-10 rounded-2xl bg-stone-50 flex items-center justify-center text-[11px] font-black text-stone-500 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                  <div key={donor.id} className="group bg-white hover:bg-emerald-50/30 border border-stone-100 p-3.5 rounded-[1.5rem] transition-all flex items-center justify-between shadow-sm hover:shadow-md hover:border-emerald-100 relative overflow-hidden">
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="w-9 h-9 rounded-xl bg-stone-50 flex items-center justify-center text-[10px] font-black text-stone-500 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
                         {donors.length - idx}
                       </div>
                       <div>
-                        <p className="text-[16px] font-black text-stone-900 uppercase leading-none tracking-tight">{donor.firstName} {donor.lastName}</p>
-                        <div className="flex gap-4 mt-2 flex-wrap items-center">
+                        <p className="text-[15px] font-black text-stone-900 uppercase leading-none tracking-tight">{donor.firstName} {donor.lastName}</p>
+                        <div className="flex gap-3 mt-1.5 flex-wrap items-center">
                           <div className="flex items-center gap-1.5">
                             <Building2 className="w-3 h-3 text-stone-500" />
                             <span className="text-[10px] font-bold text-stone-500 uppercase">B{donor.block || '?'} L{donor.house || '?'}</span>
@@ -668,9 +668,9 @@ export default function App() {
                 )}
 
                 {activeTab === 'exportar' && (
-                  <div className="text-center py-6 space-y-6">
-                     <p className="text-stone-500 font-bold text-[10px] uppercase leading-relaxed px-10">Genera respaldos oficiales para el Patronato.</p>
-                     <div className="flex flex-col gap-3">
+                  <div className="text-center py-8">
+                     <p className="text-stone-500 font-bold text-[10px] uppercase leading-tight px-10">Genera respaldos oficiales para el Patronato.</p>
+                     <div className="flex flex-col gap-3 mt-6">
                       <button 
                         type="button"
                         onClick={exportXLSX} 
