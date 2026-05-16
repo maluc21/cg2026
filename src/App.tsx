@@ -52,6 +52,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [activeTab, setActiveTab] = useState<'registros' | 'parametros' | 'exportar'>('registros');
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newDonor, setNewDonor] = useState({
     firstName: '',
     lastName: '',
@@ -126,18 +127,29 @@ export default function App() {
     reader.readAsDataURL(file);
   };
 
-  const addDonor = async () => {
+  const handleSaveDonor = async () => {
     if (!newDonor.firstName || !newDonor.bags || Number(newDonor.bags) <= 0) {
       setMsg({ type: 'err', text: 'Completa el nombre y la cantidad de bolsas.' });
       return;
     }
 
     try {
-      await addDoc(collection(db, 'donors'), {
-        ...newDonor,
-        bags: Number(newDonor.bags),
-        createdAt: serverTimestamp()
-      });
+      if (editingId) {
+        await setDoc(doc(db, 'donors', editingId), {
+          ...newDonor,
+          bags: Number(newDonor.bags),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        setMsg({ type: 'ok', text: 'Registro actualizado correctamente.' });
+      } else {
+        await addDoc(collection(db, 'donors'), {
+          ...newDonor,
+          bags: Number(newDonor.bags),
+          createdAt: serverTimestamp()
+        });
+        setMsg({ type: 'ok', text: 'Aporte registrado correctamente.' });
+      }
+      
       setNewDonor({
         firstName: '',
         lastName: '',
@@ -147,11 +159,26 @@ export default function App() {
         paymentType: 'Banco',
         date: new Date().toISOString().split('T')[0]
       });
-      setMsg({ type: 'ok', text: 'Aporte registrado correctamente.' });
+      setEditingId(null);
     } catch (err) {
       console.error(err);
       setMsg({ type: 'err', text: 'No tienes permisos para realizar esta acción.' });
     }
+  };
+
+  const editDonor = (donor: Donor) => {
+    setNewDonor({
+      firstName: donor.firstName,
+      lastName: donor.lastName || '',
+      block: donor.block || '',
+      house: donor.house || '',
+      bags: donor.bags.toString(),
+      paymentType: donor.paymentType || 'Banco',
+      date: donor.date || new Date().toISOString().split('T')[0]
+    });
+    setEditingId(donor.id);
+    setActiveTab('registros');
+    setIsAdminMode(true);
   };
 
   const deleteDonor = async (id: string) => {
@@ -175,43 +202,55 @@ export default function App() {
   };
 
   const exportXLSX = () => {
-    if (donors.length === 0) return;
-    const sorted = [...donors].sort((a, b) => b.bags - a.bags);
-    const wb = XLSX.utils.book_new();
-    
-    const rows = [
-      ['#', 'Nombre', 'Apellido', 'Bloque', 'Casa/Lote', 'Bolsas', 'Valor Est. (L)', 'Fecha']
-    ];
-    sorted.forEach((d, i) => {
-      rows.push([
-        i + 1, 
-        d.firstName, 
-        d.lastName || '', 
-        d.block || '', 
-        d.house || '', 
-        d.bags, 
-        settings.costPerBag > 0 ? d.bags * settings.costPerBag : '', 
-        formatDate(d.date)
-      ]);
-    });
-    
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    XLSX.utils.book_append_sheet(wb, ws, 'Registros');
-    
-    const totalBags = donors.reduce((s, d) => s + d.bags, 0);
-    const res = [
-      ['RESUMEN - Fase 2 Calle Principal'],
-      ['Exportado el:', new Date().toLocaleDateString()],
-      [''],
-      ['Meta bolsas:', settings.bagsGoal],
-      ['Bolsas aportadas:', totalBags],
-      ['Bolsas pendientes:', Math.max(0, settings.bagsGoal - totalBags)],
-      ['Progreso:', Math.round((totalBags / settings.bagsGoal) * 100) + '%']
-    ];
-    const wsRes = XLSX.utils.aoa_to_sheet(res);
-    XLSX.utils.book_append_sheet(wb, wsRes, 'Resumen');
-    
-    XLSX.writeFile(wb, `CaribbeanGarden_Fase2_${new Date().toISOString().split('T')[0]}.xlsx`);
+    try {
+      if (donors.length === 0) {
+        setMsg({ type: 'err', text: 'No hay datos para exportar.' });
+        return;
+      }
+      
+      setMsg({ type: 'ok', text: 'Generando archivo Excel...' });
+      
+      const sorted = [...donors].sort((a, b) => b.bags - a.bags);
+      const wb = XLSX.utils.book_new();
+      
+      const rows = [
+        ['#', 'Nombre', 'Apellido', 'Bloque', 'Casa/Lote', 'Tipo de Pago', 'Bolsas', 'Valor Est. (L)', 'Fecha']
+      ];
+      sorted.forEach((d, i) => {
+        rows.push([
+          i + 1, 
+          d.firstName, 
+          d.lastName || '', 
+          d.block || '', 
+          d.house || '', 
+          d.paymentType || 'Banco',
+          d.bags, 
+          settings.costPerBag > 0 ? d.bags * settings.costPerBag : '', 
+          formatDate(d.date)
+        ]);
+      });
+      
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+      
+      const totalBags = donors.reduce((s, d) => s + d.bags, 0);
+      const res = [
+        ['RESUMEN - Fase 2 Calle Principal'],
+        ['Exportado el:', new Date().toLocaleDateString()],
+        [''],
+        ['Meta bolsas:', settings.bagsGoal],
+        ['Bolsas aportadas:', totalBags],
+        ['Bolsas pendientes:', Math.max(0, settings.bagsGoal - totalBags)],
+        ['Progreso:', Math.round((totalBags / settings.bagsGoal) * 100) + '%']
+      ];
+      const wsRes = XLSX.utils.aoa_to_sheet(res);
+      XLSX.utils.book_append_sheet(wb, wsRes, 'Resumen');
+      
+      XLSX.writeFile(wb, `CaribbeanGarden_Fase2_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (err) {
+      console.error(err);
+      setMsg({ type: 'err', text: 'Error al generar el Excel.' });
+    }
   };
 
   const totalBags = donors.reduce((acc, d) => acc + d.bags, 0);
@@ -237,13 +276,13 @@ export default function App() {
             )}
           </div>
           <div className="flex-1">
-            <p className="text-[9px] sm:text-[11px] font-black text-emerald-700 uppercase tracking-wide sm:tracking-wider mb-0.5">
+            <p className="text-[9px] sm:text-[11px] font-black text-emerald-700 uppercase mb-0.5">
               Residencial Caribbean Garden
             </p>
-            <h1 className="text-base md:text-xl font-black tracking-tight text-emerald-950 leading-tight uppercase">
+            <h1 className="text-base md:text-xl font-black text-emerald-950 leading-tight uppercase">
               Recaudación Cemento para Proyecto Fundición Fase 2
             </h1>
-            <p className="text-[11px] font-bold text-stone-500 uppercase tracking-[0.15em] mt-1 text-opacity-80">
+            <p className="text-[11px] font-bold text-stone-500 uppercase mt-1 text-opacity-80">
               Calle Principal - 2026
             </p>
           </div>
@@ -264,14 +303,14 @@ export default function App() {
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black tracking-widest uppercase mb-3 inline-block">Meta del Proyecto</span>
-                <h2 className="text-3xl md:text-4xl font-black text-stone-800 tracking-tighter leading-none">
+                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase mb-3 inline-block">Meta del Proyecto</span>
+                <h2 className="text-3xl md:text-4xl font-black text-stone-800 leading-none">
                   {totalBags.toLocaleString()} <span className="text-xl text-stone-500 font-normal uppercase">/ {settings.bagsGoal.toLocaleString()} Bolsas</span>
                 </h2>
               </div>
               <div className="text-right">
                  <div className="text-3xl font-black text-emerald-600 leading-none">{pct}%</div>
-                 <div className="text-[10px] font-black text-stone-500 uppercase tracking-widest mt-1">Avance</div>
+                 <div className="text-[10px] font-black text-stone-500 uppercase mt-1">Avance</div>
               </div>
             </div>
 
@@ -329,14 +368,14 @@ export default function App() {
                 <line x1="0" y1="60" x2="920" y2="60" stroke="white" strokeWidth="1" strokeDasharray="10,10" opacity="0.4" />
                 <line x1={0.7 * 920} y1="20" x2={0.7 * 920} y2="100" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4,2" />
               </svg>
-              <div className="absolute top-2 left-5 text-[9px] font-black text-emerald-900/60 uppercase tracking-tighter">Inicio Calle</div>
-              <div className="absolute top-2 right-5 text-[9px] font-black text-emerald-900/60 uppercase tracking-tighter">Meta {settings.linearMeters}m</div>
+              <div className="absolute top-2 left-5 text-[9px] font-black text-emerald-900/60 uppercase">Inicio Calle</div>
+              <div className="absolute top-2 right-5 text-[9px] font-black text-emerald-900/60 uppercase">Meta {settings.linearMeters}m</div>
             </div>
 
             {/* Accumulation Visual: The Cement Bag Stack */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
-                 <h4 className="text-[11px] font-black text-stone-600 uppercase tracking-widest">Material Acumulado</h4>
+                 <h4 className="text-[11px] font-black text-stone-600 uppercase">Material Acumulado</h4>
                  <div className="text-[10px] font-bold text-emerald-700 uppercase tabular-nums">{totalBags} Bolsas</div>
               </div>
               <div className="flex flex-wrap gap-1 md:gap-1.5 p-4 bg-stone-50 rounded-[2rem] border border-stone-100 min-h-[80px] content-start">
@@ -362,7 +401,7 @@ export default function App() {
               <p className="mt-2 text-[10px] text-stone-500 font-medium lowercase italic text-center">Cada bloque representa aprox. 50 bolsas</p>
             </div>
             
-            <p className="mt-4 text-center text-[11px] font-black text-stone-500 uppercase tracking-[0.1em]">
+            <p className="mt-4 text-center text-[11px] font-black text-stone-500 uppercase">
               {pct >= 70 ? (
                 <span className="text-amber-800 bg-amber-50 px-4 py-2 rounded-full border border-amber-200 italic">✔ Programando fundición (70% superado)</span>
               ) : (
@@ -376,8 +415,8 @@ export default function App() {
         <div className="grid grid-cols-2 gap-4">
            <div className="bg-emerald-500 text-white rounded-[2rem] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden group">
               <div>
-                <p className="text-emerald-100 text-[10px] font-black uppercase tracking-widest mb-1">Vecinos Participando</p>
-                <h4 className="text-4xl font-black tracking-tighter">{donors.length}</h4>
+                <p className="text-emerald-100 text-[10px] font-black uppercase mb-1">Vecinos Participando</p>
+                <h4 className="text-4xl font-black">{donors.length}</h4>
               </div>
               <div className="mt-4 flex items-center gap-2">
                  <div className="flex -space-x-2">
@@ -398,23 +437,23 @@ export default function App() {
 
            <div className="bg-white border border-stone-200 rounded-[2rem] p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-stone-600 text-[10px] font-black uppercase tracking-widest mb-1">Carga Sugerida</p>
-                <h4 className="text-4xl font-black tracking-tighter text-stone-800">{bagsPerNeighbor}</h4>
+                <p className="text-stone-600 text-[10px] font-black uppercase mb-1">Carga Sugerida</p>
+                <h4 className="text-4xl font-black text-stone-800">{bagsPerNeighbor}</h4>
               </div>
-              <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-tight mt-4">Bolsas promedio por lote</p>
+              <p className="text-[10px] font-bold text-emerald-700 uppercase mt-4">Bolsas promedio por lote</p>
            </div>
         </div>
 
         {/* REGISTROS CARD */}
         <div className="bg-white rounded-[2.5rem] border border-stone-200 p-6 shadow-sm flex-1">
            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[12px] font-black text-stone-800 uppercase tracking-widest">Actividad de Aportes</h3>
+              <h3 className="text-[12px] font-black text-stone-800 uppercase">Actividad de Aportes</h3>
            </div>
 
            <div className="space-y-3">
               {donors.length === 0 ? (
                 <div className="text-center py-12">
-                   <p className="text-[11px] font-bold text-stone-500 uppercase tracking-widest">Esperando primer aporte...</p>
+                   <p className="text-[11px] font-bold text-stone-500 uppercase">Esperando primer aporte...</p>
                 </div>
               ) : (
                 donors.map((donor, idx) => (
@@ -422,26 +461,36 @@ export default function App() {
                     <div className="flex items-center gap-4">
                       <span className="text-[11px] font-bold text-stone-200">{idx + 1}</span>
                       <div>
-                        <p className="text-[15px] font-black text-stone-800 uppercase tracking-tighter leading-none">{donor.firstName} {donor.lastName}</p>
+                        <p className="text-[15px] font-black text-stone-800 uppercase leading-none">{donor.firstName} {donor.lastName}</p>
                         <div className="flex gap-3 mt-1.5 flex-wrap">
-                          <span className="text-[10px] font-bold text-stone-600 uppercase tracking-widest">Bloque {donor.block || '?'} Lote {donor.house || '?'}</span>
+                          <span className="text-[10px] font-bold text-stone-600 uppercase">Bloque {donor.block || '?'} Lote {donor.house || '?'}</span>
                           <span className="px-2 py-0.5 bg-stone-100 rounded text-[9px] font-black text-stone-700 uppercase">{donor.paymentType || 'Banco'}</span>
-                          <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest tabular-nums">{formatDate(donor.date)}</span>
+                          <span className="text-[10px] font-bold text-stone-500 uppercase tabular-nums">{formatDate(donor.date)}</span>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-5">
                       <div className="text-right">
-                        <p className="text-emerald-700 font-extrabold text-xl tracking-tighter leading-none">+{donor.bags}</p>
-                        <p className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.1em] mt-0.5">Bolsas</p>
+                        <p className="text-emerald-700 font-extrabold text-xl leading-none">+{donor.bags}</p>
+                        <p className="text-[9px] font-black text-emerald-400 uppercase mt-0.5">Bolsas</p>
                       </div>
                       {isAdminMode && (
-                        <button 
-                          onClick={() => deleteDonor(donor.id)}
-                          className="p-2 text-stone-200 hover:text-red-500 hover:bg-white rounded-xl transition-all"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => editDonor(donor)}
+                            className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-white rounded-xl transition-all"
+                            title="Editar"
+                          >
+                            <Settings className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => deleteDonor(donor.id)}
+                            className="p-2 text-stone-400 hover:text-red-500 hover:bg-white rounded-xl transition-all"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -451,7 +500,7 @@ export default function App() {
         </div>
 
         {/* Footer info compact */}
-        <footer className="flex justify-between items-center px-4 py-8 text-stone-500 text-[10px] font-black uppercase tracking-[0.3em]">
+        <footer className="flex justify-between items-center px-4 py-8 text-stone-500 text-[10px] font-black uppercase">
            <div className="flex items-center gap-4">
              <div className="h-10 w-10 bg-white rounded-xl shadow-sm border border-stone-50 overflow-hidden flex items-center justify-center p-1">
                {settings.logoUrl ? (
@@ -477,8 +526,8 @@ export default function App() {
               </button>
               
               <div className="mb-10">
-                 <h2 className="text-2xl font-black text-stone-800 uppercase tracking-tighter">Panel de Control</h2>
-                 <p className="text-stone-600 text-[10px] font-black uppercase tracking-widest">Gestión de Obra y Registros</p>
+                 <h2 className="text-2xl font-black text-stone-800 uppercase">Panel de Control</h2>
+                 <p className="text-stone-600 text-[10px] font-black uppercase">Gestión de Obra y Registros</p>
               </div>
 
               <div className="flex gap-2 mb-10 p-1.5 bg-stone-200/50 rounded-2xl w-full max-w-sm">
@@ -491,7 +540,7 @@ export default function App() {
                      key={tab.id}
                      onClick={() => setActiveTab(tab.id as any)}
                      className={cn(
-                       "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                       "flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all",
                        activeTab === tab.id ? "bg-white text-emerald-800 shadow-sm" : "text-stone-400 hover:text-emerald-700"
                      )}
                    >
@@ -528,9 +577,30 @@ export default function App() {
                         </div>
                       </div>
                     </div>
-                    <button onClick={addDonor} className="w-full bg-emerald-700 text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl hover:bg-emerald-800 transition-all flex items-center justify-center gap-3">
-                      <Check className="w-4 h-4" /> Registrar Donación
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button onClick={handleSaveDonor} className="w-full bg-emerald-700 text-white font-black uppercase py-4 rounded-2xl hover:bg-emerald-800 transition-all flex items-center justify-center gap-3">
+                        <Check className="w-4 h-4" /> {editingId ? 'Actualizar Registro' : 'Registrar Donación'}
+                      </button>
+                      {editingId && (
+                        <button 
+                          onClick={() => {
+                            setEditingId(null);
+                            setNewDonor({
+                              firstName: '',
+                              lastName: '',
+                              block: '',
+                              house: '',
+                              bags: '',
+                              paymentType: 'Banco',
+                              date: new Date().toISOString().split('T')[0]
+                            });
+                          }} 
+                          className="w-full text-[10px] font-black text-stone-400 uppercase hover:text-stone-600 p-2"
+                        >
+                          Cancelar Edición
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -559,7 +629,7 @@ export default function App() {
                               onChange={handleLogoUpload}
                               className="absolute inset-0 opacity-0 cursor-pointer"
                             />
-                            <div className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Cambiar Logo</div>
+                            <div className="text-[10px] font-black text-emerald-800 uppercase">Cambiar Logo</div>
                             <p className="text-[9px] text-stone-400 font-bold mt-1">Click o arrastra imagen (JPG, PNG)</p>
                           </div>
                           {(editSettings?.logoUrl || settings.logoUrl) && (
@@ -576,18 +646,22 @@ export default function App() {
                         </div>
                       </div>
                     </div>
-                    <button onClick={saveParams} className="w-full bg-[#4b3d33] text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl hover:bg-stone-900 transition-all">Guardar Configuración</button>
+                    <button onClick={saveParams} className="w-full bg-[#4b3d33] text-white font-black uppercase py-4 rounded-2xl hover:bg-stone-900 transition-all">Guardar Configuración</button>
                   </div>
                 )}
 
                 {activeTab === 'exportar' && (
                   <div className="text-center py-6 space-y-6">
-                     <p className="text-stone-500 font-bold text-[10px] uppercase tracking-widest leading-relaxed px-10">Genera respaldos oficiales para el Patronato.</p>
+                     <p className="text-stone-500 font-bold text-[10px] uppercase leading-relaxed px-10">Genera respaldos oficiales para el Patronato.</p>
                      <div className="flex flex-col gap-3">
-                      <button onClick={exportXLSX} className="bg-emerald-100 text-emerald-900 font-black uppercase tracking-[0.15em] py-4 rounded-2xl hover:bg-emerald-200 transition-all flex items-center justify-center gap-3 text-[10px]">
+                      <button 
+                        type="button"
+                        onClick={exportXLSX} 
+                        className="bg-emerald-100 text-emerald-900 font-black uppercase py-4 rounded-2xl hover:bg-emerald-200 transition-all flex items-center justify-center gap-3 text-[10px]"
+                      >
                         <FileSpreadsheet className="w-4 h-4" /> Bajar Excel (.xlsx)
                       </button>
-                      <button onClick={handleLogout} className="mt-4 text-[9px] font-black text-stone-400 uppercase tracking-widest hover:text-red-500 transition-colors">Cerrar Sesión Administrador</button>
+                      <button onClick={handleLogout} className="mt-4 text-[9px] font-black text-stone-400 uppercase hover:text-red-500 transition-colors">Cerrar Sesión Administrador</button>
                      </div>
                   </div>
                 )}
@@ -600,7 +674,7 @@ export default function App() {
       {/* Floating Messages */}
       {msg && (
         <div className={cn(
-          "fixed top-10 left-1/2 -translate-x-1/2 px-10 py-4 rounded-full shadow-2xl font-black text-[10px] uppercase tracking-[0.2em] animate-in slide-in-from-top duration-300 z-[100]",
+          "fixed top-10 left-1/2 -translate-x-1/2 px-10 py-4 rounded-full shadow-2xl font-black text-[10px] uppercase animate-in slide-in-from-top duration-300 z-[100]",
           msg.type === 'ok' ? "bg-emerald-900 text-white" : "bg-red-900 text-white"
         )}>
           {msg.text}
