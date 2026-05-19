@@ -35,7 +35,8 @@ import {
   FileText,
   Save,
   Pencil,
-  Settings
+  Settings,
+  Calendar
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -269,6 +270,39 @@ export default function App() {
   const need70 = Math.max(0, Math.ceil(settings.bagsGoal * 0.7) - totalBags);
 
   const isAdmin = user?.email === "maluc21@gmail.com";
+
+  interface MonthlyStat {
+    month: string;
+    totalBags: number;
+    donorCount: number;
+  }
+
+  const monthlyStats = donors.reduce((acc, d) => {
+    const dDate = d.date ? new Date(d.date + 'T00:00:00') : new Date();
+    const monthKey = `${dDate.getFullYear()}-${String(dDate.getMonth() + 1).padStart(2, '0')}`;
+    if (!acc[monthKey]) {
+      acc[monthKey] = {
+        month: monthKey,
+        totalBags: 0,
+        donorCount: 0
+      };
+    }
+    acc[monthKey].totalBags += d.bags;
+    acc[monthKey].donorCount += 1;
+    return acc;
+  }, {} as Record<string, MonthlyStat>);
+
+  const sortedMonthlyStats = (Object.values(monthlyStats) as MonthlyStat[]).sort((a, b) => b.month.localeCompare(a.month));
+
+  const MONTH_NAMES = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  const formatMonth = (monthKey: string) => {
+    const [year, month] = monthKey.split('-');
+    return `${MONTH_NAMES[parseInt(month) - 1]} ${year}`;
+  };
 
   return (
     <>
@@ -668,18 +702,54 @@ export default function App() {
                 )}
 
                 {activeTab === 'exportar' && (
-                  <div className="text-center py-8">
-                     <p className="text-stone-500 font-bold text-[10px] uppercase leading-tight px-10">Genera respaldos oficiales para el Patronato.</p>
-                     <div className="flex flex-col gap-3 mt-6">
+                  <div className="space-y-6">
+                    <div className="text-center py-4 border-b border-stone-100">
+                      <p className="text-stone-500 font-bold text-[10px] uppercase leading-tight px-10">Resumen y reportes oficiales del proyecto.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                        <h4 className="text-[10px] font-black text-stone-800 uppercase tracking-widest">Recaudación Mensual</h4>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-2">
+                        {sortedMonthlyStats.length === 0 ? (
+                          <div className="bg-stone-50 rounded-2xl p-6 text-center border border-stone-100">
+                            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">No hay datos mensuales registrados</p>
+                          </div>
+                        ) : (
+                          sortedMonthlyStats.map((stat: MonthlyStat) => (
+                            <div key={stat.month} className="bg-white border border-stone-100 p-4 rounded-2xl flex items-center justify-between shadow-sm transition-all hover:border-emerald-100 hover:shadow-md">
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                  <span className="text-emerald-700 text-xs font-black">{stat.month.split('-')[1]}</span>
+                                </div>
+                                <div>
+                                  <p className="text-[13px] font-black text-stone-800 uppercase leading-none">{formatMonth(stat.month)}</p>
+                                  <p className="text-[9px] font-bold text-stone-400 uppercase mt-1.5">{stat.donorCount} Aportes registrados</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-emerald-700 font-black text-lg leading-none">+{stat.totalBags}</p>
+                                <p className="text-[8px] font-black text-emerald-400 uppercase mt-1 tracking-wider">Bolsas</p>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex flex-col gap-3">
                       <button 
                         type="button"
                         onClick={exportXLSX} 
-                        className="bg-emerald-100 text-emerald-900 font-black uppercase py-4 rounded-2xl hover:bg-emerald-200 transition-all flex items-center justify-center gap-3 text-[10px]"
+                        className="bg-emerald-700 text-white font-black uppercase py-4 rounded-2xl hover:bg-emerald-800 transition-all flex items-center justify-center gap-3 text-[10px] shadow-lg shadow-emerald-200"
                       >
-                        <FileSpreadsheet className="w-4 h-4" /> Bajar Excel (.xlsx)
+                        <FileSpreadsheet className="w-4 h-4" /> Exportar a Excel (.xlsx)
                       </button>
                       <button onClick={handleLogout} className="mt-4 text-[9px] font-black text-stone-400 uppercase hover:text-red-500 transition-colors">Cerrar Sesión Administrador</button>
-                     </div>
+                    </div>
                   </div>
                 )}
               </div>
